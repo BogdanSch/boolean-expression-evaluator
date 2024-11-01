@@ -1,7 +1,8 @@
 import { TruthTable, Values } from "./types/booleanExpressionTypes";
 
 class BooleanExpressionEvaluator {
-  #expression: string;
+  #expression: string = "";
+  static precedence: { [key: string]: number } = { "!": 3, "&&": 2, "||": 1 };
 
   constructor(expression: string) {
     this.#expression = expression;
@@ -20,7 +21,7 @@ class BooleanExpressionEvaluator {
       if (token === "AND") queue.push("&&");
       else if (token === "OR") queue.push("||");
       else if (token === "NOT") queue.push("!");
-      // else if (token === "(" || token === ")") queue.push(token);
+      else if (token === "(" || token === ")") queue.push(token);
       else if (values.hasOwnProperty(token)) queue.push(values[token]);
       else queue.push(token);
     });
@@ -32,12 +33,15 @@ class BooleanExpressionEvaluator {
    * Evaluates the expression with given values for variables.
    */
   evaluate(values: Values): boolean {
-    const queue = this.#createQueue(values);
+    const queue: (string | boolean)[] = this.#createQueue(values);
 
     const stack: boolean[] = [];
-    const operatorStack: (string | boolean)[] = [];
+    const operatorStack: string[] = [];
 
-    const applyOperator = (operator: string) => {
+    const applyOperator = () => {
+      const operator = operatorStack.pop();
+      if (!operator) return;
+
       if (operator === "!") {
         const a = stack.pop();
         if (a === undefined)
@@ -56,16 +60,24 @@ class BooleanExpressionEvaluator {
 
     queue.forEach((item) => {
       if (item === "&&" || item === "||" || item === "!") {
-        operatorStack.push(item);
+        while (
+          operatorStack.length &&
+          operatorStack[operatorStack.length - 1] !== "(" &&
+          BooleanExpressionEvaluator.precedence[
+            operatorStack[operatorStack.length - 1]
+          ] >= BooleanExpressionEvaluator.precedence[item]
+        ) {
+          applyOperator();
+        }
+        operatorStack.push(item as string);
       } else if (item === "(") {
-        operatorStack.push(item);
+        operatorStack.push(item as string);
       } else if (item === ")") {
         while (
           operatorStack.length &&
           operatorStack[operatorStack.length - 1] !== "("
         ) {
-          const operator = operatorStack.pop();
-          if (typeof operator === "string") applyOperator(operator);
+          applyOperator();
         }
         operatorStack.pop();
       } else {
@@ -74,8 +86,7 @@ class BooleanExpressionEvaluator {
     });
 
     while (operatorStack.length) {
-      const operator = operatorStack.pop();
-      if (typeof operator === "string") applyOperator(operator);
+      applyOperator();
     }
 
     const result = stack.pop();

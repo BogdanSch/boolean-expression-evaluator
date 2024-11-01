@@ -1,13 +1,14 @@
 import { FC, useState, useEffect } from "react";
 
+import { Values } from "../lib/types/booleanExpressionTypes";
 import BooleanExpressionEvaluator from "../lib/booleanExpressionEvaluator";
 
 const EXPRESSION: string = "(A AND B) OR (NOT C)";
-const values: { [key: string]: boolean } = { A: true, B: false, C: true };
+const values: Values = { A: true, B: false, C: true };
 const booleanExpression = new BooleanExpressionEvaluator(EXPRESSION);
 
 const LogicalExpression: FC = () => {
-  const [result, setResult] = useState(false);
+  const [result, setResult] = useState<boolean>(false);
 
   useEffect(() => {
     setResult(booleanExpression.evaluate(values));

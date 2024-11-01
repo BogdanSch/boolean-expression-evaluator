@@ -14,9 +14,11 @@ const TruthTableExpression: FC = () => {
   }, []);
 
   return (
-    <div className="mt-5 text-center">
-      <h2>Truth Table</h2>
-      <table className="table table-bordered table-striped">
+    <div className="mt-5">
+      <div className="text-left">
+        <h3>Task 2: Truth Table</h3>
+      </div>
+      <table className="table table-bordered table-striped mt-3 text-center">
         <thead>
           <tr>
             {Object.keys(truthTable[0] || {}).map(
