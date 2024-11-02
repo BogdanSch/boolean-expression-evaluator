@@ -9,5 +9,5 @@ const values: Values = { A: true, B: false, C: true };
 const booleanExpression = new BooleanExpressionEvaluator(EXPRESSION);
 
 test(`Evaluates boolean expression: ${EXPRESSION}`, () => {
-  expect(booleanExpression).toBeTruthy();
+  expect(booleanExpression.evaluate(values)).toBeTruthy();
 });
