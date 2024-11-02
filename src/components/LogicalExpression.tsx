@@ -3,8 +3,9 @@ import { FC, useState, useEffect } from "react";
 import { Values } from "../lib/types/booleanExpressionTypes";
 import BooleanExpressionEvaluator from "../lib/booleanExpressionEvaluator";
 
-const EXPRESSION: string = "(A AND B) OR (NOT C)";
-const values: Values = { A: true, B: false, C: true };
+// const EXPRESSION: string = "(A AND B) OR (NOT C)";
+const EXPRESSION: string = "NOT A IMPLIES B AND C";
+const values: Values = { A: false, B: false, C: true };
 const booleanExpression = new BooleanExpressionEvaluator(EXPRESSION);
 
 const LogicalExpression: FC = () => {

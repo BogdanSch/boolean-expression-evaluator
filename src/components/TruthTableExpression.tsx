@@ -3,7 +3,10 @@ import { FC, useState, useEffect } from "react";
 import { TruthTable } from "../lib/types/booleanExpressionTypes";
 import BooleanExpressionEvaluator from "../lib/booleanExpressionEvaluator";
 
-const EXPRESSION = "(A AND B) OR C";
+// const EXPRESSION = "(A AND B) OR C";
+// const EXPRESSION = "A EQUIV B";
+// const EXPRESSION = "(A AND B) OR (B IMPLIES C)";
+const EXPRESSION: string = "NOT A IMPLIES B AND C";
 const booleanExpression = new BooleanExpressionEvaluator(EXPRESSION);
 
 const TruthTableExpression: FC = () => {

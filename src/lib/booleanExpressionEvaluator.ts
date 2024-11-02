@@ -2,7 +2,13 @@ import { TruthTable, Values } from "./types/booleanExpressionTypes";
 
 class BooleanExpressionEvaluator {
   #expression: string = "";
-  static precedence: { [key: string]: number } = { "!": 3, "&&": 2, "||": 1 };
+  static precedence: { [key: string]: number } = {
+    "!": 4,
+    "&&": 3,
+    "||": 2,
+    "->": 1,
+    "<->": 0,
+  };
 
   constructor(expression: string) {
     this.#expression = expression;
@@ -21,6 +27,8 @@ class BooleanExpressionEvaluator {
       if (token === "AND") queue.push("&&");
       else if (token === "OR") queue.push("||");
       else if (token === "NOT") queue.push("!");
+      else if (token === "IMPLIES") queue.push("->");
+      else if (token === "EQUIV") queue.push("<->");
       else if (token === "(" || token === ")") queue.push(token);
       else if (values.hasOwnProperty(token)) queue.push(values[token]);
       else queue.push(token);
@@ -50,16 +58,39 @@ class BooleanExpressionEvaluator {
       } else {
         const b = stack.pop();
         const a = stack.pop();
+
         if (a === undefined || b === undefined)
           throw new Error(
             "Invalid expression: missing operand for binary operation"
           );
-        stack.push(operator === "&&" ? a && b : a || b);
+
+        switch (operator) {
+          case "&&":
+            stack.push(a && b);
+            break;
+          case "||":
+            stack.push(a || b);
+            break;
+          case "->":
+            stack.push(!a || b);
+            break;
+          case "<->":
+            stack.push(a === b);
+            break;
+          default:
+            throw new Error(`Unknown operator: ${operator}`);
+        }
       }
     };
 
     queue.forEach((item) => {
-      if (item === "&&" || item === "||" || item === "!") {
+      if (
+        item === "&&" ||
+        item === "||" ||
+        item === "!" ||
+        item === "->" ||
+        item === "<->"
+      ) {
         while (
           operatorStack.length &&
           operatorStack[operatorStack.length - 1] !== "(" &&
